@@ -1,0 +1,126 @@
+{
+  hiddenSize : 2
+  vocabSize : 101686
+  maxOutNorm : -1
+  minlr : 1e-05
+  lr : 0.001
+  transfer : "ReLU"
+  cutoffNorm : -1
+  momentum : 0.9
+  dataDir : "data/"
+  batchSize : 1
+  rho : 2000
+  useDevice : 1
+  epochs : 500
+}
+Building model...	
+nn.Sequential {
+  [input -> (1) -> (2) -> (3) -> (4) -> output]
+  (1): nn.ParallelTable {
+    input
+      |`-> (1): nn.Sequential {
+      |      [input -> (1) -> output]
+      |      (1): nn.Sequential {
+      |        [input -> (1) -> (2) -> output]
+      |        (1): nn.BiSequencer @ nn.Sequential {
+      |          [input -> (1) -> (2) -> (3) -> output]
+      |          (1): nn.ConcatTable {
+      |            input
+      |              |`-> (1): nn.Sequencer @ nn.Recursor @ nn.Sequential {
+      |              |      [input -> (1) -> (2) -> output]
+      |              |      (1): nn.LookupTable
+      |              |      (2): nn.LSTM
+      |              |    }
+      |              |`-> (2): nn.Sequential {
+      |              |      [input -> (1) -> (2) -> (3) -> output]
+      |              |      (1): nn.ReverseTable
+      |              |      (2): nn.Sequencer @ nn.Recursor @ nn.Sequential {
+      |              |        [input -> (1) -> (2) -> output]
+      |              |        (1): nn.LookupTable
+      |              |        (2): nn.LSTM
+      |              |      }
+      |              |      (3): nn.ReverseTable
+      |              |    }
+      |               ... -> output
+      |          }
+      |          (2): nn.ZipTable
+      |          (3): nn.Sequencer @ nn.Recursor @ nn.JoinTable
+      |        }
+      |        (2): nn.SelectTable
+      |      }
+      |    }
+      |`-> (2): nn.Sequential {
+      |      [input -> (1) -> output]
+      |      (1): nn.Sequential {
+      |        [input -> (1) -> output]
+      |        (1): nn.BiSequencer @ nn.Sequential {
+      |          [input -> (1) -> (2) -> (3) -> output]
+      |          (1): nn.ConcatTable {
+      |            input
+      |              |`-> (1): nn.Sequencer @ nn.Recursor @ nn.Sequential {
+      |              |      [input -> (1) -> (2) -> output]
+      |              |      (1): nn.LookupTable
+      |              |      (2): nn.LSTM
+      |              |    }
+      |              |`-> (2): nn.Sequential {
+      |              |      [input -> (1) -> (2) -> (3) -> output]
+      |              |      (1): nn.ReverseTable
+      |              |      (2): nn.Sequencer @ nn.Recursor @ nn.Sequential {
+      |              |        [input -> (1) -> (2) -> output]
+      |              |        (1): nn.LookupTable
+      |              |        (2): nn.LSTM
+      |              |      }
+      |              |      (3): nn.ReverseTable
+      |              |    }
+      |               ... -> output
+      |          }
+      |          (2): nn.ZipTable
+      |          (3): nn.Sequencer @ nn.Recursor @ nn.JoinTable
+      |        }
+      |      }
+      |    }
+       ... -> output
+  }
+  (2): nn.SelectTable
+  (3): nn.Linear(4 -> 101686)
+  (4): nn.LogSoftMax
+}
+Reading data...	
+Data read complete...	
+Optimizing using SGD...	
+{
+  query : CudaTensor - size: 17x1
+  target : CudaTensor - size: 1x1
+  doc : CudaTensor - size: 938x1
+}
+Input: 17 Gradout: 17	
+Input: 17 Gradout: 17	
+Input: 17 Gradout: 17	
+Input: 938 Gradout: 938	
+Input: 938 Gradout: 938	
+Input: 938 Gradout: 938	
+{
+  query : CudaTensor - size: 10x1
+  target : CudaTensor - size: 1x1
+  doc : CudaTensor - size: 469x1
+}
+Input: 10 Gradout: 10	
+Input: 10 Gradout: 10	
+Input: 10 Gradout: 10	
+Input: 469 Gradout: 938	
+/home/sahil/torch/install/bin/luajit: /home/sahil/torch/install/share/lua/5.1/rnn/Sequencer.lua:74: gradOutput should have as many elements as input
+stack traceback:
+	[C]: in function 'assert'
+	/home/sahil/torch/install/share/lua/5.1/rnn/Sequencer.lua:74: in function 'updateGradInput'
+	/home/sahil/torch/install/share/lua/5.1/nn/Sequential.lua:55: in function 'updateGradInput'
+	/home/sahil/torch/install/share/lua/5.1/dpnn/Decorator.lua:16: in function 'updateGradInput'
+	/home/sahil/torch/install/share/lua/5.1/nn/Sequential.lua:58: in function 'updateGradInput'
+	/home/sahil/torch/install/share/lua/5.1/nn/Sequential.lua:58: in function 'updateGradInput'
+	...e/sahil/torch/install/share/lua/5.1/nn/ParallelTable.lua:19: in function 'updateGradInput'
+	/home/sahil/torch/install/share/lua/5.1/nn/Module.lua:30: in function 'backward'
+	/home/sahil/torch/install/share/lua/5.1/nn/Sequential.lua:88: in function 'backward'
+	rc-1.lua:63: in function 'Epoch'
+	rc-1.lua:128: in main chunk
+	[C]: in function 'dofile'
+	...ahil/torch/install/lib/luarocks/rocks/trepl/scm-1/bin/th:145: in main chunk
+	[C]: at 0x00406670
